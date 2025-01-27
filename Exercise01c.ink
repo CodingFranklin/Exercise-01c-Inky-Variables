@@ -21,7 +21,7 @@ VAR treasure_collected = 0
 -> cave_mouth
 
 == cave_mouth ==
-You are at the entrance to a cave. {not torch_pickup:There is a torch on the floor.} The cave extends to the east and west.
+You are at the entrance to a cave. {not torch_pickup:There is a torch on the floor.} The cave extends to the east and west. 
 
 + [Take the east tunnel] -> east_tunnel
 + [Take the west tunnel] -> west_tunnel
@@ -40,7 +40,7 @@ You are in the west tunnel. It is very dark, and you can't see anything.
 -> END
 
 == west_tunnel_lit ==
-You are in the west tunnel. It is damp and smells faintly of mold.
+You are in the west tunnel. It is damp and smells faintly of mold. You have {treasure_collected} coins in your backpack.
 * [Search for treasure] 
     ~ treasure_collected += 20
     ~ energy -= 2
@@ -49,18 +49,22 @@ You are in the west tunnel. It is damp and smells faintly of mold.
 -> END
 
 == west_treasure_room ==
-You are in a small room. In front of your is a chest with a lock. It seems you can spend 100 coins to open it.
-* [Open the chest]
+You are in a small room. In front of your is a chest with a lock. It seems you can spend 100 coins to open it. You have {treasure_collected} coins in your backpack. ({treasure_collected < 100: You don't have enough coins to open the chest, find them in other places.})
+* {treasure_collected >= 100 && energy >= 2} [Open the chest]
     ~ treasure_collected -= 100
+    ~ energy -= 2
     -> chest
+* {energy < 5} [Rest to regain energy] 
+    ~ energy = 10
++ [Go Back] -> cave_mouth
 
 == chest ==
-Oh, the chest is empty!
-
+Oh, the chest is empty! 
++ [Go Back] -> cave_mouth
 -> END
 
 == east_tunnel_lit ==
-The light of your torch glints off piles of gold coins scattered across the ground.
+The light of your torch glints off piles of gold coins scattered across the ground. You have {treasure_collected} coins in your backpack.
 * [Collect some treasure] 
     ~ treasure_collected += 50
     ~ energy -= 2
