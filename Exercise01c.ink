@@ -15,28 +15,84 @@ This exercise will demonstrate the following in the example video:
  - Check the value of a variable and have it do something
 */
 
-
+VAR energy = 10
+VAR treasure_collected = 0
 
 -> cave_mouth
 
 == cave_mouth ==
-You are at the enterance to a cave. {not torch_pickup:There is a torch on the floor.} The cave extends to the east and west.
-
-
+You are at the entrance to a cave. {not torch_pickup:There is a torch on the floor.} The cave extends to the east and west.
 
 + [Take the east tunnel] -> east_tunnel
 + [Take the west tunnel] -> west_tunnel
 * [Pick up the torch] -> torch_pickup
 
 == east_tunnel ==
-You are in the east tunnel. It is very dark, you can't see anything.
+You are in the east tunnel. It is very dark, and you can't see anything.
 * {torch_pickup} [Light Torch] -> east_tunnel_lit
 + [Go Back] -> cave_mouth
 -> END
 
 == west_tunnel ==
-You are in the west
+You are in the west tunnel. It is very dark, and you can't see anything.
+* {torch_pickup} [Light Torch] -> west_tunnel_lit
 + [Go Back] -> cave_mouth
+-> END
+
+== west_tunnel_lit ==
+You are in the west tunnel. It is damp and smells faintly of mold.
+* [Search for treasure] 
+    ~ treasure_collected += 20
+    ~ energy -= 2
+ -> west_treasure_room
++ [Go Back] -> cave_mouth
+-> END
+
+== west_treasure_room ==
+You are in a small room. In front of your is a chest with a lock. It seems you can spend 100 coins to open it.
+* [Open the chest]
+    ~ treasure_collected -= 100
+    -> chest
+
+== chest ==
+Oh, the chest is empty!
+
+-> END
+
+== east_tunnel_lit ==
+The light of your torch glints off piles of gold coins scattered across the ground.
+* [Collect some treasure] 
+    ~ treasure_collected += 50
+    ~ energy -= 2
+ -> treasure_room
++ [Go Back] -> cave_mouth
+-> END
+
+== treasure_room ==
+You are in a small treasure room. You now have {treasure_collected} coins and {energy} energy left.
+* {energy >= 5} [Explore further into the tunnel] -> hidden_passage
+* {energy < 5} [Rest to regain energy] 
+    ~ energy += 3
+ -> treasure_room
++ [Go Back] -> cave_mouth
+-> END
+
+== hidden_passage ==
+You discover a narrow hidden passage leading to another chamber. The passage is difficult to navigate, costing you energy.
+~ energy -= 3
+You arrive in a strange room where the walls glimmer with light reflecting off more treasure.
+* [Take some treasure] 
+    ~ treasure_collected += 100
+ -> final_chamber
++ [Go Back] -> treasure_room
+-> END
+
+== final_chamber ==
+You find an ancient artifact in the final chamber. It grants you immense power and refills your energy to full.
+~ energy = 10
+You now possess {treasure_collected} coins and feel fully rejuvenated.
+* [Leave the cave victorious] -> END
++ [Go Back to explore more tunnels] -> cave_mouth
 -> END
 
 === torch_pickup ===
@@ -44,6 +100,3 @@ You now have a torch. May it light the way.
 * [Go Back] -> cave_mouth
 -> END
 
-== east_tunnel_lit ==
-The light of your torch glints off of the thousands of coins in the room.
--> END
